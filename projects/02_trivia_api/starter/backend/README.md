@@ -77,27 +77,131 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 
 
-## Review Comment to the Students
+
+
+## API Endpoints documentation
+
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+GET /categories
 
-Endpoints
-GET '/api/v1.0/categories'
-GET ...
-POST ...
-DELETE ...
+- Retrieves all the available categories in a dictionary object. The keys are the ids of the categories, the values are their names (database field `type`).
+- Response body: 
+{
+    'categories': {
+        str: str,
+        ...
+    }
+}
+```
 
-GET '/api/v1.0/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+```
+GET /questions
 
+- Retrieves all the questions in a paginated fashion. Each page contains max 10 questions. The total number of available questions is always returned. The category dictionary is returned here as in `/categories`. `current_category` is always null for this endpoint.
+- query param `page`: the page number. Defaults to 1.
+- Response body: 
+{
+    'success': bool,
+    'questions': [
+        {
+            'id': int,
+            'question': str,
+            'answer': str,
+            'category': int,
+            'difficulty': int
+        },
+        ..
+    ],
+    'total_questions': int,
+    'current_category': null, // always null for this endpoint
+    'categories': {
+        str: str,
+        ...
+    }
+}
+```
+```
+DELETE /quesitons/{id}
+- Deletes a specific question, identified by the parameter `id`.
+- path argument `id`: the question to be deleted. Can't be null.
+- Response body:
+{
+    'success': bool,
+    'id': int
+}
+```
+```
+POST /questions
+Creates a new question or searches for questions containing a search string.
+- body argument `searchTerm`: the search term, as a string. If given, a paginated list of questions containing the search string will be returned. If missing, a new question will be created with the values contained in the other arguments.
+- body argument `question`: The question (string).
+- body argument `answer`: The answer to the given question (string).
+- body argument `category`: The id of the category this question belongs to (int).
+- body argument `difficulty`: The difficulty of this question (int).
+- query param `page`: the page number. Defaults to 1. Only applies to search.
+- Response body for search: 
+{
+    'success': bool,
+    'questions': [
+        {
+            'id': int,
+            'question': str,
+            'answer': str,
+            'category': int,
+            'difficulty': int
+        },
+        ..
+    ],
+    'total_questions': int
+}
+- Response body for create: 
+{
+    'success': bool
+}
+```
+```
+GET categories/{category_id}/questions
+
+- Retrieves all the questions for the given category in a paginated fashion. Each page contains max 10 questions. The total number of available questions in the given category is always returned. The category dictionary is returned here as in `/categories`. `current_category` is the name of the choosen category.
+- path argument `category_id`: The id for the choosen category. Can't be null.
+- query param `page`: the page number. Defaults to 1.
+- Response body: 
+{
+    'success': bool,
+    'questions': [
+        {
+            'id': int,
+            'question': str,
+            'answer': str,
+            'category': int,
+            'difficulty': int
+        },
+        ..
+    ],
+    'total_questions': int,
+    'current_category': str,
+    'categories': {
+        str: str,
+        ...
+    }
+}
+```
+```
+POST /quizzes
+Given a category and a list of ids of already asked questions, returns a random new question of the given category. If all questions for the category have been asked, returns null to signal the end of the game.
+- body argument `previous_questions`: The list of already answered questions' ids ([int]).
+- body argument `quiz_category`: The id for the category we are playing with (int).
+- Response body:
+{
+    'success': bool,
+    'question': {
+            'id': int,
+            'question': str,
+            'answer': str,
+            'category': int,
+            'difficulty': int
+    } || null
+}
 ```
 
 
